@@ -1,0 +1,14 @@
+server:
+  port: 8083
+
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    password: postgres
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/postgres
+
+logging:
+  level:
+    liquibase: DEBUG
