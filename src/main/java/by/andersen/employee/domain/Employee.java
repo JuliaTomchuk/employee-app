@@ -11,28 +11,26 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@FieldNameConstants
 @ToString
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "employees", indexes = @Index(columnList = "email", name = "idx_employee_email"))
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employees_seq")
+    @SequenceGenerator(name = "employees_seq", sequenceName = "employees_SEQ", allocationSize = 1)
     private Long id;
 
     @Column(nullable = false, unique = true)
