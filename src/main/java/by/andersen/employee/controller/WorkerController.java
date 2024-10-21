@@ -2,9 +2,8 @@ package by.andersen.employee.controller;
 
 import by.andersen.employee.dto.WorkerDetailedDto;
 import by.andersen.employee.dto.WorkerDto;
-import by.andersen.employee.dto.WorkerEditDto;
 import by.andersen.employee.dto.WorkerFilterDto;
-import by.andersen.employee.dto.WorkerSaveDto;
+import by.andersen.employee.dto.WorkerRequestDto;
 import by.andersen.employee.service.WorkerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,8 @@ public class WorkerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public WorkerDetailedDto save(@RequestBody @Valid WorkerSaveDto workerSaveDto) {
-        return workerService.save(workerSaveDto);
+    public WorkerDetailedDto save(@RequestBody @Valid WorkerRequestDto workerRequestDto) {
+        return workerService.save(workerRequestDto);
     }
 
     @GetMapping("/{email}")
@@ -40,10 +39,11 @@ public class WorkerController {
         return workerService.get(email);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public WorkerDetailedDto update(@Valid @RequestBody WorkerEditDto workerEditDto) {
-        return workerService.update(workerEditDto);
+    public WorkerDetailedDto update(@PathVariable Long id,
+                                    @Valid @RequestBody WorkerRequestDto workerRequestDto) {
+        return workerService.update(id, workerRequestDto);
     }
 
     @GetMapping

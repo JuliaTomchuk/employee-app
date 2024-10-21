@@ -4,9 +4,8 @@ import by.andersen.employee.domain.Employee;
 import by.andersen.employee.domain.Worker;
 import by.andersen.employee.dto.WorkerDetailedDto;
 import by.andersen.employee.dto.WorkerDto;
-import by.andersen.employee.dto.WorkerEditDto;
 import by.andersen.employee.dto.WorkerFilterDto;
-import by.andersen.employee.dto.WorkerSaveDto;
+import by.andersen.employee.dto.WorkerRequestDto;
 import by.andersen.employee.exception.DataConflictException;
 import by.andersen.employee.exception.NotFoundException;
 import by.andersen.employee.mapper.WorkerMapper;
@@ -41,12 +40,12 @@ public class WorkerServiceImpl implements WorkerService {
     private final EmployeeRepository employeeRepository;
 
     @Override
-    public WorkerDetailedDto save(WorkerSaveDto workerSaveDto) {
-        log.info("Save worker:{}", workerSaveDto);
-        if (isEmailExist(workerSaveDto.getEmail())) {
+    public WorkerDetailedDto save(WorkerRequestDto workerRequestDto) {
+        log.info("Save worker:{}", workerRequestDto);
+        if (isEmailExist(workerRequestDto.getEmail())) {
             throw new DataConflictException(EMAIL_ALREADY_EXISTS);
         }
-        Worker saved = workerRepository.save(workerMapper.toEntity(workerSaveDto));
+        Worker saved = workerRepository.save(workerMapper.toEntity(workerRequestDto));
 
         return workerMapper.toDetailedDto(saved);
     }
@@ -61,19 +60,19 @@ public class WorkerServiceImpl implements WorkerService {
     }
 
     @Override
-    public WorkerDetailedDto update(WorkerEditDto workerEditDto) {
-        log.info("Update worker with: {}", workerEditDto);
+    public WorkerDetailedDto update(Long id, WorkerRequestDto workerRequestDto) {
+        log.info("Update worker with: {}", workerRequestDto);
 
-        Worker worker = workerRepository.findById(workerEditDto.getId())
+        Worker worker = workerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(WORKER_NOT_FOUND));
         String oldEmail = worker.getEmail();
-        String newEmail = workerEditDto.getEmail();
+        String newEmail = workerRequestDto.getEmail();
 
-        if (!StringUtils.equals(oldEmail, newEmail) && isEmailExist(workerEditDto.getEmail())) {
+        if (!StringUtils.equals(oldEmail, newEmail) && isEmailExist(newEmail)) {
             throw new DataConflictException(EMAIL_ALREADY_EXISTS);
         }
 
-        Worker updated = workerMapper.update(workerEditDto, worker);
+        Worker updated = workerMapper.update(workerRequestDto, worker);
 
         return workerMapper.toDetailedDto(workerRepository.save(updated));
     }

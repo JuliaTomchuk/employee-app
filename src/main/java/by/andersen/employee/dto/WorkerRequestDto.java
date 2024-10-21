@@ -4,21 +4,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class WorkerEditDto {
+public class WorkerRequestDto {
 
-    @NotNull(message = "'id' must not be null")
-    private Long id;
-
-    @NotBlank(message = "'firstName' must not be blank")
+    @NotNull(message = "'firsName' must not be blank")
     private String firstName;
 
     @NotBlank(message = "'patronymic' must not be blank")
@@ -33,7 +24,7 @@ public class WorkerEditDto {
     @NotNull(message = "'hireDate' must not be null")
     private Instant hireDate;
 
-    @Email(message = "'email' is not a valid email address")
     @NotBlank(message = "'email' must not be blank")
+    @Email(message = "'email' is not a valid email address")
     private String email;
 }
