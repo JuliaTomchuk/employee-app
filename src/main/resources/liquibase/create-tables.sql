@@ -4,7 +4,7 @@
 -- Create a sequence for generating employee IDs, starting from 1 and incrementing by 50
 CREATE SEQUENCE employees_seq
     START WITH 1
-    INCREMENT BY 50;
+    INCREMENT BY 1;
 
 -- Create the employees table with information about employees
 CREATE TABLE employees (
