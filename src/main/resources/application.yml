@@ -8,6 +8,8 @@ spring:
     url: ${EMPLOYEE_APP_DB_URL}
   liquibase:
     change-log: classpath:/liquibase/changelog-master.yml
+  jpa:
+    open-in-view: false
 
 
 
