@@ -22,11 +22,10 @@ public class Manager extends Employee {
 
     public void addSubordinate(Employee employee) {
         subordinates.add(employee);
-        employee.setManager(this);  // Установить менеджера для подчиненного
+        employee.setManager(this);
     }
 
     public void removeSubordinate(Employee employee) {
         subordinates.remove(employee);
-        employee.setManager(null);  // Удалить менеджера у подчиненного
-    }
+        employee.setManager(null);    }
 }

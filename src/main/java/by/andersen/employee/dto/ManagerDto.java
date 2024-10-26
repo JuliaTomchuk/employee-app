@@ -1,5 +1,5 @@
 package by.andersen.employee.dto;
 
-public class ManagerDto extends EmployeeDetailedDto {
+public class ManagerDto extends EmployeeDto {
 
 }
