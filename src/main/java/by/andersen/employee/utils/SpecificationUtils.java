@@ -1,7 +1,7 @@
 package by.andersen.employee.utils;
 
 import by.andersen.employee.domain.Employee;
-import by.andersen.employee.dto.EmployeeFilterDto;
+import by.andersen.employee.dto.employee.EmployeeFilterDto;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;

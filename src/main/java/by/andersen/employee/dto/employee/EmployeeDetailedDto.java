@@ -1,5 +1,6 @@
-package by.andersen.employee.dto;
+package by.andersen.employee.dto.employee;
 
+import by.andersen.employee.dto.manager.ManagerDto;
 import java.time.Instant;
 import lombok.Data;
 

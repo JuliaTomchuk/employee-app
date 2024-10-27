@@ -1,4 +1,4 @@
-package by.andersen.employee.dto;
+package by.andersen.employee.dto.employee;
 
 import lombok.Data;
 

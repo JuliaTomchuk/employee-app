@@ -1,9 +1,9 @@
 package by.andersen.employee.mapper;
 
 import by.andersen.employee.domain.Manager;
-import by.andersen.employee.dto.ManagerDetailedDto;
-import by.andersen.employee.dto.ManagerDto;
-import by.andersen.employee.dto.ManagerRequestDto;
+import by.andersen.employee.dto.manager.ManagerDetailedDto;
+import by.andersen.employee.dto.manager.ManagerDto;
+import by.andersen.employee.dto.manager.ManagerRequestDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

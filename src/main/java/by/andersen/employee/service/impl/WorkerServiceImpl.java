@@ -1,10 +1,10 @@
 package by.andersen.employee.service.impl;
 
 import by.andersen.employee.domain.Worker;
-import by.andersen.employee.dto.WorkerDetailedDto;
-import by.andersen.employee.dto.WorkerDto;
-import by.andersen.employee.dto.WorkerFilterDto;
-import by.andersen.employee.dto.WorkerRequestDto;
+import by.andersen.employee.dto.worker.WorkerDetailedDto;
+import by.andersen.employee.dto.worker.WorkerDto;
+import by.andersen.employee.dto.worker.WorkerFilterDto;
+import by.andersen.employee.dto.worker.WorkerRequestDto;
 import by.andersen.employee.exception.DataConflictException;
 import by.andersen.employee.exception.NotFoundException;
 import by.andersen.employee.mapper.WorkerMapper;
@@ -53,7 +53,7 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public WorkerDetailedDto update(Long id, WorkerRequestDto workerRequestDto) {
-        log.info("Update worker with: {}", workerRequestDto);
+        log.info("Update worker with id: {} and fields:{}", id, workerRequestDto);
 
         Worker worker = workerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(WORKER_NOT_FOUND));
@@ -64,9 +64,8 @@ public class WorkerServiceImpl implements WorkerService {
             throw new DataConflictException(EMAIL_ALREADY_EXISTS);
         }
 
-        Worker updated = workerMapper.update(workerRequestDto, worker);
-
-        return workerMapper.toDetailedDto(workerRepository.save(updated));
+        workerMapper.update(workerRequestDto, worker);
+        return workerMapper.toDetailedDto(workerRepository.save(worker));
     }
 
     @Override

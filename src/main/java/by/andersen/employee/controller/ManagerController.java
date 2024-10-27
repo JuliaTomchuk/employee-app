@@ -1,9 +1,9 @@
 package by.andersen.employee.controller;
 
-import by.andersen.employee.dto.ManagerDetailedDto;
-import by.andersen.employee.dto.ManagerDto;
-import by.andersen.employee.dto.ManagerFilterDto;
-import by.andersen.employee.dto.ManagerRequestDto;
+import by.andersen.employee.dto.manager.ManagerDetailedDto;
+import by.andersen.employee.dto.manager.ManagerDto;
+import by.andersen.employee.dto.manager.ManagerFilterDto;
+import by.andersen.employee.dto.manager.ManagerRequestDto;
 import by.andersen.employee.service.ManagerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -70,6 +70,7 @@ public class ManagerController {
     }
 
     @DeleteMapping("/{id}/subordinates")
+    @ResponseStatus(OK)
     public ManagerDetailedDto removeSubordinates(@PathVariable Long id, @RequestParam List<Long> employeeIds) {
         return managerService.removeSubordinates(id, employeeIds);
     }
