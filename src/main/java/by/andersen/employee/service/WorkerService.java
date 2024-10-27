@@ -1,9 +1,9 @@
 package by.andersen.employee.service;
 
-import by.andersen.employee.dto.WorkerDetailedDto;
-import by.andersen.employee.dto.WorkerDto;
-import by.andersen.employee.dto.WorkerFilterDto;
-import by.andersen.employee.dto.WorkerRequestDto;
+import by.andersen.employee.dto.worker.WorkerDetailedDto;
+import by.andersen.employee.dto.worker.WorkerDto;
+import by.andersen.employee.dto.worker.WorkerFilterDto;
+import by.andersen.employee.dto.worker.WorkerRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -2,10 +2,10 @@ package by.andersen.employee.service.impl;
 
 import by.andersen.employee.domain.Employee;
 import by.andersen.employee.domain.Manager;
-import by.andersen.employee.dto.ManagerDetailedDto;
-import by.andersen.employee.dto.ManagerDto;
-import by.andersen.employee.dto.ManagerFilterDto;
-import by.andersen.employee.dto.ManagerRequestDto;
+import by.andersen.employee.dto.manager.ManagerDetailedDto;
+import by.andersen.employee.dto.manager.ManagerDto;
+import by.andersen.employee.dto.manager.ManagerFilterDto;
+import by.andersen.employee.dto.manager.ManagerRequestDto;
 import by.andersen.employee.exception.DataConflictException;
 import by.andersen.employee.exception.NotFoundException;
 import by.andersen.employee.mapper.ManagerMapper;
@@ -52,7 +52,7 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     @Transactional
     public ManagerDetailedDto update(Long id, ManagerRequestDto managerRequestDto) {
-        log.info("Update manger: {}", managerRequestDto);
+        log.info("Update manger with id: {} and fields: {}",id, managerRequestDto);
 
         Manager manager = managerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(MANAGER_NOT_FOUND));
@@ -63,8 +63,8 @@ public class ManagerServiceImpl implements ManagerService {
             throw new DataConflictException(EMAIL_ALREADY_EXISTS);
         }
 
-        Manager updated = managerMapper.update(managerRequestDto, manager);
-        return managerMapper.toManagerDetailedDto(managerRepository.save(updated));
+        managerMapper.update(managerRequestDto, manager);
+        return managerMapper.toManagerDetailedDto(managerRepository.save(manager));
     }
 
     @Override
