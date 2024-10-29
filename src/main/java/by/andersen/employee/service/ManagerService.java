@@ -24,4 +24,6 @@ public interface ManagerService {
 
     ManagerDetailedDto removeSubordinates(Long managerId, List<Long> employeeIds);
 
+    void deleteManagerFromAllEmployees(Long id);
+
 }

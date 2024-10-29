@@ -1,5 +1,6 @@
 package by.andersen.employee.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "managers")
 public class Manager extends Employee {
-    @OneToMany(mappedBy = "manager")
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.PERSIST)
     private List<Employee> subordinates = new ArrayList<>();
 
     public void addSubordinate(Employee employee) {
