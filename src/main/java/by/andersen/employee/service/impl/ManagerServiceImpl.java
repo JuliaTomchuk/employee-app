@@ -52,7 +52,7 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     @Transactional
     public ManagerDetailedDto update(Long id, ManagerRequestDto managerRequestDto) {
-        log.info("Update manger with id: {} and fields: {}",id, managerRequestDto);
+        log.info("Update manger with id: {} and fields: {}", id, managerRequestDto);
 
         Manager manager = managerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(MANAGER_NOT_FOUND));
@@ -116,9 +116,16 @@ public class ManagerServiceImpl implements ManagerService {
         List<Employee> subordinates = manager.getSubordinates();
         validationService.validateManagerHasSubordinatesWithIds(subordinates, employeeIds);
         List<Employee> subordinatesToRemove = subordinates.stream().filter(subordinate -> employeeIds.contains(subordinate.getId())).toList();
-         subordinatesToRemove.forEach(manager::removeSubordinate);
+        subordinatesToRemove.forEach(manager::removeSubordinate);
 
         return managerMapper.toManagerDetailedDto(managerRepository.save(manager));
+    }
+
+    @Override
+    @Transactional
+    public void deleteManagerFromAllEmployees(Long id) {
+        log.info("Delete manager with id: {} from all employees", id);
+        employeeRepository.deleteManagerFromEmployees(id);
     }
 
     private Manager get(Long id) {

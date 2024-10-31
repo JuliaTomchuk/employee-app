@@ -21,7 +21,7 @@ public class ValidationServiceImpl implements ValidationService {
     @Override
     public boolean isEmailExist(String email) {
         log.info("Checking if email exist: {}", email);
-        return employeeRepository.findByEmail(email).isPresent();
+        return employeeRepository.existsByEmail(email);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ValidationServiceImpl implements ValidationService {
     public void validateSubordinates(Long managerId, List<Long> employeeIds) {
         log.info("Validate subordinates with ids: {} for manager with id: {}", employeeIds, managerId);
 
-        if(employeeIds.contains(managerId)){
+        if (employeeIds.contains(managerId)) {
             throw new DataConflictException(ErrorMessage.SELF_SUBORDINATION_NOT_ALLOWED);
         }
     }
