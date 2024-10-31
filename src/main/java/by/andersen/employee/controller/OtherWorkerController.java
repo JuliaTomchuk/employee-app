@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ public class OtherWorkerController {
     private final OtherWorkerService otherWorkerService;
 
     @PostMapping
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public OtherWorkerDetailedDto save(@Valid @RequestBody OtherWorkerRequestDto otherWorkerRequestDto) {
         return otherWorkerService.save(otherWorkerRequestDto);
@@ -42,6 +44,7 @@ public class OtherWorkerController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @ResponseStatus(OK)
     public OtherWorkerDetailedDto update(@PathVariable Long id,
                                          @Valid @RequestBody OtherWorkerRequestDto otherWorkerRequestDto) {

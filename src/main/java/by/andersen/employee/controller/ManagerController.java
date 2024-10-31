@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,6 +35,7 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @PostMapping
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @ResponseStatus(CREATED)
     public ManagerDetailedDto save(@Valid @RequestBody ManagerRequestDto managerRequestDto) {
         return managerService.save(managerRequestDto);
@@ -46,6 +48,7 @@ public class ManagerController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @ResponseStatus(OK)
     public ManagerDetailedDto update(@PathVariable Long id, @Valid @RequestBody ManagerRequestDto managerRequestDto) {
         return managerService.update(id, managerRequestDto);
@@ -64,12 +67,14 @@ public class ManagerController {
     }
 
     @PatchMapping("/{id}/subordinates")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @ResponseStatus(OK)
     public ManagerDetailedDto addSubordinates(@PathVariable Long id, @RequestBody List<Long> employeeIds) {
         return managerService.addSubordinates(id, employeeIds);
     }
 
     @DeleteMapping("/{id}/subordinates")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @ResponseStatus(OK)
     public ManagerDetailedDto removeSubordinates(@PathVariable Long id, @RequestParam List<Long> employeeIds) {
         return managerService.removeSubordinates(id, employeeIds);
