@@ -12,3 +12,12 @@ spring:
     password: postgres
     username: postgres
     url: jdbc:postgresql://localhost:5432/postgres
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8082/realms/employee-realm
+
+
+
