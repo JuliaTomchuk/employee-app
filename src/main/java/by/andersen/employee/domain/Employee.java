@@ -2,6 +2,7 @@ package by.andersen.employee.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +20,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
@@ -27,6 +33,7 @@ import lombok.experimental.FieldNameConstants;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "employees", indexes = @Index(columnList = "email", name = "idx_employee_email"))
+@EntityListeners(AuditingEntityListener.class)
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employees_seq")
@@ -55,6 +62,22 @@ public class Employee {
             foreignKey = @ForeignKey(name = "employee_id_fk")
     )
     private Manager manager;
+
+    @CreatedDate
+    @Column(name = "created_date")
+    private Instant createdDate;
+
+    @LastModifiedDate
+    @Column(name = "modified_date")
+    private Instant modifiedDate;
+
+    @CreatedBy
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "modified_by")
+    private String modifiedBy;
 
     @Override
     public boolean equals(Object object) {
