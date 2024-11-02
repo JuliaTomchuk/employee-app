@@ -14,4 +14,8 @@ public class EmployeeDetailedDto {
     private Instant hireDate;
     private String email;
     private ManagerDto manager;
+    private String createdBy;
+    private String modifiedBy;
+    private Instant createdDate;
+    private Instant modifiedDate;
 }

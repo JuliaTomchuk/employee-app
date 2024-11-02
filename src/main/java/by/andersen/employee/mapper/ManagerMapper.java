@@ -11,6 +11,10 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ManagerMapper {
 
+    @Mapping(target = "modifiedDate", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "subordinates", ignore = true)
     @Mapping(target = "manager", ignore = true)
     @Mapping(target = "id", ignore = true)
@@ -18,6 +22,10 @@ public interface ManagerMapper {
 
     ManagerDetailedDto toManagerDetailedDto(Manager manager);
 
+    @Mapping(target = "modifiedDate", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "subordinates", ignore = true)
     @Mapping(target = "manager", ignore = true)
     @Mapping(target = "id", ignore = true)
