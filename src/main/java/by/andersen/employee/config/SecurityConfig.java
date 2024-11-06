@@ -15,12 +15,22 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String[] SWAGGER_WHITELIST = {
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-resources",
+            "/swagger-ui/**"
+    };
+
     private final JwtConverter jwtConverter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth ->
-                auth.anyRequest().authenticated());
+                auth
+                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
+                        .anyRequest()
+                        .authenticated());
         http.sessionManagement(sess -> sess.sessionCreationPolicy(
                 SessionCreationPolicy.STATELESS));
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)));
