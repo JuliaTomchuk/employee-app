@@ -1,16 +1,12 @@
 --liquibase formatted sql
 --changeset Julia_Tomchuk:add-tables
 
--- Create a sequence for generating employee IDs, starting from 1 and incrementing by 50
-CREATE SEQUENCE employees_seq
-    START WITH 1
-    INCREMENT BY 1;
 
 -- Create the employees table with information about employees
 CREATE TABLE employees (
-                           birth_date TIMESTAMP(6) WITH TIME ZONE,  -- Employee's birth date
-                           hire_date TIMESTAMP(6) WITH TIME ZONE,   -- Employee's hire date
-                           id BIGINT NOT NULL,                      -- Unique employee ID
+                           birth_date TIMESTAMP WITH TIME ZONE,  -- Employee's birth date
+                           hire_date TIMESTAMP WITH TIME ZONE,   -- Employee's hire date
+                           id BIGSERIAL NOT NULL,                      -- Unique employee ID
                            manager_id BIGINT,                       -- ID of the employee's manager
                            email VARCHAR(255) NOT NULL UNIQUE,      -- Employee's email, must be unique
                            first_name VARCHAR(255),                 -- Employee's first name
@@ -21,20 +17,20 @@ CREATE TABLE employees (
 
 -- Create the managers table with information about managers
 CREATE TABLE managers (
-                          id BIGINT NOT NULL,                      -- Unique manager ID
+                          id BIGSERIAL NOT NULL,                      -- Unique manager ID
                           PRIMARY KEY (id)                         -- Primary key constraint on manager ID
 );
 
 -- Create the other_workers table for other types of employees (e.g., supervisors, secretaries)
 CREATE TABLE other_workers (
-                               id BIGINT NOT NULL,                      -- Unique ID for other workers
+                               id BIGSERIAL NOT NULL,                      -- Unique ID for other workers
                                description VARCHAR(255),                -- Description of the worker's role or position
                                PRIMARY KEY (id)                         -- Primary key constraint on ID
 );
 
 -- Create the workers table for standard employees
 CREATE TABLE workers (
-                         id BIGINT NOT NULL,                      -- Unique worker ID
+                         id BIGSERIAL NOT NULL,                      -- Unique worker ID
                          PRIMARY KEY (id)                         -- Primary key constraint on worker ID
 );
 alter table if exists employees add constraint employees_id_fk foreign key (manager_id) references managers;
