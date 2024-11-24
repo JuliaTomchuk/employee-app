@@ -1,6 +1,7 @@
 package by.andersen.employee.repository;
 
 import by.andersen.employee.domain.Employee;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,5 +17,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     @Modifying
     @Query(value = "UPDATE employees SET manager_id = null WHERE manager_id = :id", nativeQuery = true)
     void deleteManagerFromEmployees(Long id);
+
+    List<Employee> findByManagerEmail(String email);
 
 }

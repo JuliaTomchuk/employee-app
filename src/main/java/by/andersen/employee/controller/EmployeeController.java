@@ -8,6 +8,7 @@ import by.andersen.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class EmployeeController {
 
     @GetMapping("/{email}")
     @ResponseStatus(OK)
-    public EmployeeDetailedDto getEmployee(@PathVariable String email) {
+    public EmployeeDetailedDto get(@PathVariable String email) {
         return employeeService.get(email);
     }
 
@@ -43,13 +44,13 @@ public class EmployeeController {
 
     @GetMapping
     @ResponseStatus(OK)
-    public Page<EmployeeDto> getAll(Pageable pageable) {
+    public Page<EmployeeDto> getAll(@PageableDefault Pageable pageable) {
         return employeeService.getAll(pageable);
     }
 
     @GetMapping("/search")
     @ResponseStatus(OK)
-    public Page<EmployeeDetailedDto> search(EmployeeFilterDto employeeFilterDto, Pageable pageable) {
+    public Page<EmployeeDetailedDto> search(EmployeeFilterDto employeeFilterDto, @PageableDefault Pageable pageable) {
         return employeeService.search(employeeFilterDto, pageable);
     }
 

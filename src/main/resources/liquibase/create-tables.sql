@@ -33,6 +33,10 @@ CREATE TABLE workers (
                          id BIGSERIAL NOT NULL,                      -- Unique worker ID
                          PRIMARY KEY (id)                         -- Primary key constraint on worker ID
 );
+
+-- Create sequence for employee IDs
+CREATE SEQUENCE employee_sequence START WITH 1 INCREMENT BY 1;
+
 alter table if exists employees add constraint employees_id_fk foreign key (manager_id) references managers;
 alter table if exists managers add constraint manager_id_fk foreign key (id) references employees;
 alter table if exists other_workers add constraint other_workers_id_fk foreign key (id) references employees;
