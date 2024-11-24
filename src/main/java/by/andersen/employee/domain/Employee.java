@@ -36,8 +36,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employees_seq")
-    @SequenceGenerator(name = "employees_seq", sequenceName = "employees_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_seq_gen")
+    @SequenceGenerator(name = "employee_seq_gen", sequenceName = "employee_sequence", allocationSize = 1)
     private Long id;
 
     @Column(nullable = false, unique = true)
