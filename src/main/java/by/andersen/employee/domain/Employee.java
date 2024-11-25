@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.Instant;
 import java.util.Objects;
 import lombok.Getter;
@@ -78,6 +79,9 @@ public class Employee {
     @LastModifiedBy
     @Column(name = "modified_by")
     private String modifiedBy;
+
+    @Version
+    private Long version;
 
     @Override
     public boolean equals(Object object) {

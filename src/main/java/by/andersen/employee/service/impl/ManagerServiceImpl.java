@@ -38,6 +38,7 @@ public class ManagerServiceImpl implements ManagerService {
     private final EmployeeRepository employeeRepository;
 
     @Override
+    @Transactional
     public ManagerDetailedDto save(ManagerRequestDto managerRequestDto) {
         log.info("Save manager: {}", managerRequestDto);
 

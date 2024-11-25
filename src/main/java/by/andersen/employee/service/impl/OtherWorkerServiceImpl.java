@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static by.andersen.employee.exception.ErrorMessage.EMAIL_ALREADY_EXISTS;
 import static by.andersen.employee.exception.ErrorMessage.OTHER_WORKER_NOT_FOUND;
@@ -32,6 +33,7 @@ public class OtherWorkerServiceImpl implements OtherWorkerService {
     private final OtherWorkerMapper otherWorkerMapper;
 
     @Override
+    @Transactional
     public OtherWorkerDetailedDto save(OtherWorkerRequestDto otherWorkerRequestDto) {
         log.info("Save other worker: {}", otherWorkerRequestDto);
 
@@ -54,6 +56,7 @@ public class OtherWorkerServiceImpl implements OtherWorkerService {
     }
 
     @Override
+    @Transactional
     public OtherWorkerDetailedDto update(Long id, OtherWorkerRequestDto otherWorkerRequestDto) {
         log.info("Update other worker with id: {} and fields: {}", id, otherWorkerRequestDto);
 

@@ -12,6 +12,7 @@ CREATE TABLE employees (
                            first_name VARCHAR(255),                 -- Employee's first name
                            last_name VARCHAR(255),                  -- Employee's last name
                            patronymic VARCHAR(255),                 -- Employee's patronymic
+                           version BIGINT,                          -- Version for optimistic locking
                            PRIMARY KEY (id)                         -- Primary key constraint on employee ID
 );
 
