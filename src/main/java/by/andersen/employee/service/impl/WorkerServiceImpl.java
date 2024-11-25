@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static by.andersen.employee.exception.ErrorMessage.EMAIL_ALREADY_EXISTS;
 import static by.andersen.employee.exception.ErrorMessage.WORKER_NOT_FOUND;
@@ -32,6 +33,7 @@ public class WorkerServiceImpl implements WorkerService {
     private final ValidationService validationService;
 
     @Override
+    @Transactional
     public WorkerDetailedDto save(WorkerRequestDto workerRequestDto) {
         log.info("Save worker:{}", workerRequestDto);
         if (validationService.isEmailExist(workerRequestDto.getEmail())) {
@@ -52,6 +54,7 @@ public class WorkerServiceImpl implements WorkerService {
     }
 
     @Override
+    @Transactional
     public WorkerDetailedDto update(Long id, WorkerRequestDto workerRequestDto) {
         log.info("Update worker with id: {} and fields:{}", id, workerRequestDto);
 
