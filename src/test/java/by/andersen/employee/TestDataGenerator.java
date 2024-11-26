@@ -96,4 +96,43 @@ public class TestDataGenerator {
         return List.of(manager1, manager2, manager3);
     }
 
+    public List<OtherWorker> createOtherWorkers() {
+        OtherWorker otherWorker = new OtherWorker();
+        otherWorker.setFirstName("Jan");
+        otherWorker.setLastName("Doe");
+        otherWorker.setBirthDate(Instant.parse("2001-12-27T00:00:00Z"));
+        otherWorker.setEmail("jan.doe@gmail.com");
+        otherWorker.setHireDate(Instant.parse("2021-07-12T00:00:00Z"));
+        otherWorker.setPatronymic("Vladimirovich");
+        otherWorker.setDescription("this is Jan");
+
+        OtherWorker otherWorker1 = new OtherWorker();
+        otherWorker1.setFirstName("Raymond");
+        otherWorker1.setLastName("Manzarek");
+        otherWorker1.setBirthDate(Instant.parse("1939-02-12T00:00:00Z"));
+        otherWorker1.setEmail("ray.manzarek@gmail.com");
+        otherWorker1.setHireDate(Instant.parse("1999-07-12T00:00:00Z"));
+        otherWorker1.setPatronymic("Daniel");
+        otherWorker1.setDescription("this is Ray");
+
+        OtherWorker otherWorker2 = new OtherWorker();
+        otherWorker2.setFirstName("Robert");
+        otherWorker2.setLastName("Krieger");
+        otherWorker2.setBirthDate(Instant.parse("1946-01-08T00:00:00Z"));
+        otherWorker2.setEmail("robert.krieger@gmail.com");
+        otherWorker2.setHireDate(Instant.parse("2013-07-03T00:00:00Z"));
+        otherWorker2.setPatronymic("Alan");
+        otherWorker2.setDescription("this is Robert");
+
+        OtherWorker otherWorker3 = new OtherWorker();
+        otherWorker3.setFirstName("Roger");
+        otherWorker3.setLastName("Barrett");
+        otherWorker3.setBirthDate(Instant.parse("1946-01-06T00:00:00Z"));
+        otherWorker3.setEmail("syd.barrett@gmail.com");
+        otherWorker3.setHireDate(Instant.parse("2023-12-12T00:00:00Z"));
+        otherWorker3.setPatronymic("Keith");
+        otherWorker3.setDescription("this is Syd");
+
+        return List.of(otherWorker, otherWorker1, otherWorker2, otherWorker3);
+    }
 }
