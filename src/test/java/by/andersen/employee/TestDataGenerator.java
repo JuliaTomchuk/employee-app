@@ -135,4 +135,41 @@ public class TestDataGenerator {
 
         return List.of(otherWorker, otherWorker1, otherWorker2, otherWorker3);
     }
+
+    public List<Worker> createWorkers() {
+        Worker worker = new Worker();
+        worker.setFirstName("Jan");
+        worker.setLastName("Doe");
+        worker.setBirthDate(Instant.parse("2001-12-27T00:00:00Z"));
+        worker.setEmail("jan.doe@gmail.com");
+        worker.setHireDate(Instant.parse("2021-07-12T00:00:00Z"));
+        worker.setPatronymic("Vladimirovich");
+
+        Worker worker1 = new Worker();
+        worker1.setFirstName("Raymond");
+        worker1.setLastName("Manzarek");
+        worker1.setBirthDate(Instant.parse("1939-02-12T00:00:00Z"));
+        worker1.setEmail("ray.manzarek@gmail.com");
+        worker1.setHireDate(Instant.parse("1999-07-12T00:00:00Z"));
+        worker1.setPatronymic("Daniel");
+
+        Worker worker2 = new Worker();
+        worker2.setFirstName("Robert");
+        worker2.setLastName("Krieger");
+        worker2.setBirthDate(Instant.parse("1946-01-08T00:00:00Z"));
+        worker2.setEmail("robert.krieger@gmail.com");
+        worker2.setHireDate(Instant.parse("2013-07-03T00:00:00Z"));
+        worker2.setPatronymic("Alan");
+
+        Worker worker3 = new Worker();
+        worker3.setFirstName("Roger");
+        worker3.setLastName("Barrett");
+        worker3.setBirthDate(Instant.parse("1946-01-06T00:00:00Z"));
+        worker3.setEmail("syd.barrett@gmail.com");
+        worker3.setHireDate(Instant.parse("2023-12-12T00:00:00Z"));
+        worker3.setPatronymic("Keith");
+
+        return List.of(worker, worker1, worker2, worker3);
+    }
+
 }
