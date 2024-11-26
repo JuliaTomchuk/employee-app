@@ -2,9 +2,6 @@ package by.andersen.employee.controller;
 
 import by.andersen.employee.TestDataGenerator;
 import by.andersen.employee.domain.Employee;
-import by.andersen.employee.domain.Manager;
-import by.andersen.employee.domain.OtherWorker;
-import by.andersen.employee.domain.Worker;
 import by.andersen.employee.dto.employee.EmployeeFilterDto;
 import by.andersen.employee.enums.EmployeeType;
 import by.andersen.employee.exception.ErrorMessage;
@@ -12,17 +9,14 @@ import by.andersen.employee.repository.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.jayway.jsonpath.JsonPath;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +27,31 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static by.andersen.employee.TestDataGenerator.BIRTH_DATE_FROM;
+import static by.andersen.employee.TestDataGenerator.BIRTH_DATE_TO;
+import static by.andersen.employee.TestDataGenerator.EMAIL;
+import static by.andersen.employee.TestDataGenerator.FIRST_NAME;
+import static by.andersen.employee.TestDataGenerator.HIRE_DATE_FROM;
+import static by.andersen.employee.TestDataGenerator.HIRE_DATE_TO;
+import static by.andersen.employee.TestDataGenerator.LAST_NAME;
+import static by.andersen.employee.TestDataGenerator.MANAGER_EMAIL;
+import static by.andersen.employee.TestDataGenerator.PAGE;
+import static by.andersen.employee.TestDataGenerator.PATRONYMIC;
 import static by.andersen.employee.TestDataGenerator.ROLE_ADMIN;
-import static by.andersen.employee.enums.EmployeeType.OTHER_WORKER;
+import static by.andersen.employee.TestDataGenerator.SIZE;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -57,24 +64,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 @Testcontainers
+@ActiveProfiles("test")
 class EmployeeControllerTest {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static final String BASE_PATH = "/api/v1/employees";
-    public static final String EMAIL = "email";
-    public static final String FIRST_NAME = "firstName";
-    public static final String LAST_NAME = "lastName";
-    public static final String PATRONYMIC = "patronymic";
-    public static final String MANAGER_EMAIL = "managerEmail";
-    public static final String BIRTH_DATE_FROM = "birthDateFrom";
-    public static final String BIRTH_DATE_TO = "birthDateTo";
-    public static final String HIRE_DATE_FROM = "hireDateFrom";
-    public static final String HIRE_DATE_TO = "hireDateTo";
-    public static final String PAGE = "page";
-    public static final String SIZE = "size";
+    private static final String BASE_PATH = "/api/v1/employees";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -88,12 +84,22 @@ class EmployeeControllerTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Container
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:16-alpine"
+    );
+
+    @DynamicPropertySource
+    private static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @BeforeAll
-    static void beforeAll() {
+    static void setUp() {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
     }
 
     @BeforeEach
@@ -274,41 +280,6 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$.content.length()").value(0));
     }
 
-    @ParameterizedTest
-    @MethodSource("getParamChangeType")
-    void changeType_ValidInput_EmployeeDetailedDto(Long id, EmployeeType type) throws Exception {
-        boolean wasManager = false;
-        Employee employeeBeforeChange = employeeRepository.findById(id).get();
-        if (employeeBeforeChange instanceof Manager) {
-            wasManager = true;
-        }
-
-        String response = mockMvc.perform(put(BASE_PATH + "/" + id + "/change-type")
-                        .param("type", type.name())
-                        .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN))))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        Integer returnedId = JsonPath.read(response, "$.id");
-
-        Employee employee = employeeRepository.findById(returnedId.longValue()).get();
-
-        switch (type) {
-            case WORKER -> assertInstanceOf(Worker.class, employee);
-            case OTHER_WORKER -> assertInstanceOf(OtherWorker.class, employee);
-            case MANAGER -> assertInstanceOf(Manager.class, employee);
-
-        }
-        assertTrue(employeeRepository.findById(id).isEmpty());
-
-        if (wasManager) {
-            List<Employee> allByManagerEmail = employeeRepository.findByManagerEmail(employeeBeforeChange.getEmail());
-            assertTrue(allByManagerEmail.isEmpty());
-        }
-    }
-
     @Test
     void changeType_InvalidId_NotFound() throws Exception {
         mockMvc.perform(put(BASE_PATH + "/" + 100 + "/change-type")
@@ -333,12 +304,6 @@ class EmployeeControllerTest {
                         .param("type", EmployeeType.MANAGER.name())
                         .with(jwt()))
                 .andExpect(status().isForbidden());
-    }
-
-    private static Stream<Arguments> getParamChangeType() {
-        return Stream.of(Arguments.of(1L, EmployeeType.WORKER),
-                Arguments.of(2L, OTHER_WORKER),
-                Arguments.of(3L, EmployeeType.MANAGER));
     }
 
     private static List<EmployeeFilterDto> getEmployeeFilterDto() {

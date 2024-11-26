@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class EmployeeRequestDto {
-    @NotNull(message = "'firsName' must not be blank")
+    @NotBlank(message = "'firsName' must not be blank")
     private String firstName;
 
     @NotBlank(message = "'patronymic' must not be blank")

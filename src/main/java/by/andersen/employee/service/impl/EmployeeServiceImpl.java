@@ -14,6 +14,7 @@ import by.andersen.employee.repository.EmployeeRepository;
 import by.andersen.employee.service.EmployeeService;
 import by.andersen.employee.service.ManagerService;
 import by.andersen.employee.utils.SpecificationUtils;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
+    private final EntityManager entityManager;
     private final ManagerService managerService;
 
     @Override
@@ -83,6 +85,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         delete(id);
+        entityManager.flush();
+        entityManager.clear();
 
         Employee updated = null;
         switch (employeeType) {

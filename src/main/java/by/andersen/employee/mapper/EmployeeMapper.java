@@ -16,11 +16,14 @@ public interface EmployeeMapper {
 
     EmployeeDto toDto(Employee employee);
 
+    @Mapping(target = "id", ignore = true)
     Worker toWorker(Employee employee);
 
     @Mapping(target = "subordinates", ignore = true)
+    @Mapping(target = "id", ignore = true)
     Manager toManager(Employee employee);
 
     @Mapping(target = "description", ignore = true)
+    @Mapping(target = "id", ignore = true)
     OtherWorker toOtherWorker(Employee employee);
 }
