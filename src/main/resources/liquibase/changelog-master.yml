@@ -3,3 +3,5 @@ databaseChangeLog:
       file: liquibase/create-tables.sql
   - include:
       file: liquibase/add-auditing- to-employees.yml
+  - include:
+      file: liquibase/add-employees.sql
