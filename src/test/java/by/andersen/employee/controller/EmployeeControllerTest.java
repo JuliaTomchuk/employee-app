@@ -1,6 +1,7 @@
 package by.andersen.employee.controller;
 
 import by.andersen.employee.TestDataGenerator;
+import by.andersen.employee.TestConfig;
 import by.andersen.employee.domain.Employee;
 import by.andersen.employee.dto.employee.EmployeeFilterDto;
 import by.andersen.employee.enums.EmployeeType;
@@ -22,6 +23,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -66,6 +68,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @ActiveProfiles("test")
+@Import(TestConfig.class)
 class EmployeeControllerTest {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();

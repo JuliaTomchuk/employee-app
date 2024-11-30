@@ -1,5 +1,6 @@
 package by.andersen.employee.controller;
 
+import by.andersen.employee.TestConfig;
 import by.andersen.employee.TestDataGenerator;
 import by.andersen.employee.domain.Employee;
 import by.andersen.employee.domain.Manager;
@@ -24,6 +25,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -74,6 +76,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Import(TestConfig.class)
 class ManagerControllerTest {
 
     private static final String BASE_PATH = "/api/v1/managers";
