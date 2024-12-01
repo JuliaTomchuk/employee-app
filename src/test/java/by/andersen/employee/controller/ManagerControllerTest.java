@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -92,9 +91,6 @@ class ManagerControllerTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void saveData() {
         managerRepository.saveAll(testDataGenerator.createManagers());
@@ -103,8 +99,6 @@ class ManagerControllerTest {
     @AfterEach
     void cleanDataBase() {
         managerRepository.deleteAll();
-        jdbcTemplate.execute("ALTER SEQUENCE employee_sequence RESTART WITH 1");
-
     }
 
     @Container
@@ -189,7 +183,9 @@ class ManagerControllerTest {
 
     @ParameterizedTest
     @MethodSource("getParamForUpdate")
-    void update_ValidRequest_ManagerDetailedDto(Long id, ManagerRequestDto managerRequestDto) throws Exception {
+    void update_ValidRequest_ManagerDetailedDto(int index, ManagerRequestDto managerRequestDto) throws Exception {
+        Long id = managerRepository.findAll().get(index).getId();
+
         mockMvc.perform(put(BASE_PATH + "/" + id)
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -230,7 +226,8 @@ class ManagerControllerTest {
 
     @ParameterizedTest
     @MethodSource("getParamForUpdateWithInvalidManagerRequest")
-    void update_InvalidManagerRequest_BadRequest(Long id, ManagerRequestDto managerRequestDto) throws Exception {
+    void update_InvalidManagerRequest_BadRequest(int index, ManagerRequestDto managerRequestDto) throws Exception {
+        Long id = managerRepository.findAll().get(index).getId();
         mockMvc.perform(put(BASE_PATH + "/" + id)
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -240,8 +237,8 @@ class ManagerControllerTest {
 
     @ParameterizedTest
     @MethodSource("getParamForUpdate")
-    void update_WithoutRoleAdmin_Forbidden(Long id, ManagerRequestDto managerRequestDto) throws Exception {
-
+    void update_WithoutRoleAdmin_Forbidden(int index, ManagerRequestDto managerRequestDto) throws Exception {
+        Long id = managerRepository.findAll().get(index).getId();
         mockMvc.perform(put(BASE_PATH + "/" + id)
                         .with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -330,9 +327,13 @@ class ManagerControllerTest {
     }
 
     @Transactional
-    @ParameterizedTest
-    @MethodSource("getValidIdsForAddSubordinates")
-    void addSubordinates_ValidRequest_ManagerDetailedDto(Long managerId, List<Long> employeeIds) throws Exception {
+    @Test
+    void addSubordinates_ValidRequest_ManagerDetailedDto() throws Exception {
+        List<Manager> all = managerRepository.findAll();
+        Long managerId = all.get(0).getId();
+        all.remove(0);
+        List<Long> employeeIds = all.stream().map(Employee::getId).toList();
+
         mockMvc.perform(patch(BASE_PATH + "/" + managerId + "/subordinates")
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -350,8 +351,9 @@ class ManagerControllerTest {
     @Transactional
     @Test
     void addSubordinates_AddMangerToHisOwnSubordinates_DataConflictException() throws Exception {
-        Long managerId = 1L;
-        List<Long> employeeIds = List.of(managerId, 2L, 3L);
+        List<Manager> all = managerRepository.findAll();
+        Long managerId = all.get(0).getId();
+        List<Long> employeeIds = all.stream().map(Employee::getId).toList();
 
         mockMvc.perform(patch(BASE_PATH + "/" + managerId + "/subordinates")
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)))
@@ -369,8 +371,10 @@ class ManagerControllerTest {
 
     @Test
     void addSubordinates_InvalidManagerId_NotFound() throws Exception {
-
-        mockMvc.perform(patch(BASE_PATH + "/" + 10 + "/subordinates")
+        List<Manager> all = managerRepository.findAll();
+        Long lastId = all.get(all.size()-1).getId();
+        long id = lastId+1L;
+        mockMvc.perform(patch(BASE_PATH + "/" + id+ "/subordinates")
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(List.of(2, 3))))
@@ -399,11 +403,6 @@ class ManagerControllerTest {
         List<Long> subordinateIdsAfterDeletion = actual.getSubordinates().stream().map(Employee::getId).toList();
 
         assertFalse(subordinateIdsAfterDeletion.contains(employeeId));
-    }
-
-    private static Stream<Arguments> getValidIdsForAddSubordinates() {
-        return Stream.of(Arguments.of(1L, List.of(2L, 3L),
-                Arguments.of(3L, List.of(1L, 2L))));
     }
 
     private static Stream<ManagerFilterDto> getManagerFilterDto() {
@@ -476,11 +475,11 @@ class ManagerControllerTest {
         managerRequestDto5.setEmail("dave.grohl@gmail.com");
         managerRequestDto5.setBirthDate(Instant.parse("1969-01-14T00:00:00Z"));
 
-        return Stream.of(Arguments.of(1L, managerRequestDto),
-                Arguments.of(2L, managerRequestDto1),
-                Arguments.of(3L, managerRequestDto2),
-                Arguments.of(2L, managerRequestDto4),
-                Arguments.of(3L, managerRequestDto5));
+        return Stream.of(Arguments.of(0, managerRequestDto),
+                Arguments.of(1, managerRequestDto1),
+                Arguments.of(2, managerRequestDto2),
+                Arguments.of(0, managerRequestDto4),
+                Arguments.of(1, managerRequestDto5));
     }
 
     private static Stream<Arguments> getParamForUpdateWithInvalidId() {
@@ -492,9 +491,9 @@ class ManagerControllerTest {
 
     private static Stream<Arguments> getParamForUpdate() {
         List<ManagerRequestDto> managerRequestDtos = getManagerRequestDto();
-        return Stream.of(Arguments.of(1L, managerRequestDtos.get(0)),
-                Arguments.of(2L, managerRequestDtos.get(1)),
-                Arguments.of(3L, managerRequestDtos.get(2)));
+        return Stream.of(Arguments.of(0, managerRequestDtos.get(0)),
+                Arguments.of(1, managerRequestDtos.get(1)),
+                Arguments.of(2, managerRequestDtos.get(2)));
     }
 
     private static List<ManagerRequestDto> getManagerRequestDto() {

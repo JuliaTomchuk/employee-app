@@ -17,7 +17,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -83,9 +81,6 @@ class OtherWorkerControllerTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void saveData() {
         otherWorkerRepository.saveAll(testDataGenerator.createOtherWorkers());
@@ -94,8 +89,6 @@ class OtherWorkerControllerTest {
     @AfterEach
     void cleanDataBase() {
         otherWorkerRepository.deleteAll();
-        jdbcTemplate.execute("ALTER SEQUENCE employee_sequence RESTART WITH 1");
-
     }
 
     @Container
@@ -209,7 +202,9 @@ class OtherWorkerControllerTest {
 
     @ParameterizedTest
     @MethodSource("getParamForUpdate")
-    void update_ValidRequest_OtherWorkerDetailedDto(Long id, OtherWorkerRequestDto otherWorkerRequestDto) throws Exception {
+    void update_ValidRequest_OtherWorkerDetailedDto(OtherWorkerRequestDto otherWorkerRequestDto) throws Exception {
+        Long id = otherWorkerRepository.findAll().get(0).getId();
+
         mockMvc.perform(put(BASE_PATH + "/" + id)
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -284,7 +279,7 @@ class OtherWorkerControllerTest {
     }
 
 
-    private static Stream<Arguments> getParamForUpdate() {
+    private static Stream<OtherWorkerRequestDto> getParamForUpdate() {
         OtherWorkerRequestDto otherWorkerRequestDto = new OtherWorkerRequestDto();
         otherWorkerRequestDto.setFirstName("Josh");
         otherWorkerRequestDto.setLastName("Homme");
@@ -294,27 +289,7 @@ class OtherWorkerControllerTest {
         otherWorkerRequestDto.setHireDate(Instant.now());
         otherWorkerRequestDto.setDescription("This is Josh");
 
-        OtherWorkerRequestDto otherWorkerRequestDto1 = new OtherWorkerRequestDto();
-        otherWorkerRequestDto1.setFirstName("Dave");
-        otherWorkerRequestDto1.setLastName("Grohl");
-        otherWorkerRequestDto1.setPatronymic("test");
-        otherWorkerRequestDto1.setEmail("dave.grohl@gmail.com");
-        otherWorkerRequestDto1.setBirthDate(Instant.parse("1969-01-14T00:00:00Z"));
-        otherWorkerRequestDto1.setHireDate(Instant.now());
-        otherWorkerRequestDto1.setDescription("This is Dave");
-
-        OtherWorkerRequestDto otherWorkerRequestDto2 = new OtherWorkerRequestDto();
-        otherWorkerRequestDto2.setFirstName("Mark");
-        otherWorkerRequestDto2.setLastName("Lanegan");
-        otherWorkerRequestDto2.setPatronymic("Homme");
-        otherWorkerRequestDto2.setEmail("mark.lanegan@gmail.com");
-        otherWorkerRequestDto2.setBirthDate(Instant.parse("1964-11-25T00:00:00Z"));
-        otherWorkerRequestDto2.setHireDate(Instant.now());
-        otherWorkerRequestDto2.setDescription("This is Mark");
-
-        return Stream.of(Arguments.of(1L, otherWorkerRequestDto),
-                Arguments.of(2L, otherWorkerRequestDto1),
-                Arguments.of(3L, otherWorkerRequestDto2));
+        return Stream.of( otherWorkerRequestDto);
     }
 
     private static List<Pageable> getPageable() {

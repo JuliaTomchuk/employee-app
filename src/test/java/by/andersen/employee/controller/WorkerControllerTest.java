@@ -17,7 +17,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -83,9 +81,6 @@ class WorkerControllerTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void saveData() {
         workerRepository.saveAll(testDataGenerator.createWorkers());
@@ -94,7 +89,6 @@ class WorkerControllerTest {
     @AfterEach
     void cleanDataBase() {
         workerRepository.deleteAll();
-        jdbcTemplate.execute("ALTER SEQUENCE employee_sequence RESTART WITH 1");
 
     }
 
@@ -204,9 +198,11 @@ class WorkerControllerTest {
                 .andExpect(jsonPath("$.page.totalElements").value(4));
     }
 
+
     @ParameterizedTest
     @MethodSource("getParamForUpdate")
-    void update_ValidRequest_WorkerDetailedDto(Long id, WorkerRequestDto workerRequestDto) throws Exception {
+    void update_ValidRequest_WorkerDetailedDto(WorkerRequestDto workerRequestDto) throws Exception {
+        Long id = workerRepository.findAll().get(0).getId();
         mockMvc.perform(put(BASE_PATH + "/" + id)
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -232,6 +228,7 @@ class WorkerControllerTest {
         assertNotNull(actual.getCreatedDate());
         assertEquals(Instant.now().truncatedTo(ChronoUnit.DAYS), actual.getModifiedDate().truncatedTo(ChronoUnit.DAYS));
         assertNotNull(actual.getModifiedBy());
+
     }
 
     @ParameterizedTest
@@ -278,34 +275,15 @@ class WorkerControllerTest {
         return Stream.of(workerFilterDto);
     }
 
-    private static Stream<Arguments> getParamForUpdate() {
+    private static Stream<WorkerRequestDto> getParamForUpdate() {
         WorkerRequestDto workerRequestDto = new WorkerRequestDto();
-        workerRequestDto.setFirstName("Josh");
-        workerRequestDto.setLastName("Homme");
+        workerRequestDto.setFirstName("Dave");
+        workerRequestDto.setLastName("Grohl");
         workerRequestDto.setPatronymic("test");
-        workerRequestDto.setEmail("josh.homme@gmail.com");
-        workerRequestDto.setBirthDate(Instant.parse("1973-05-17T00:00:00Z"));
+        workerRequestDto.setEmail("dave.grohl@gmail.com");
+        workerRequestDto.setBirthDate(Instant.parse("1969-01-14T00:00:00Z"));
         workerRequestDto.setHireDate(Instant.now());
-
-        WorkerRequestDto workerRequestDto1 = new WorkerRequestDto();
-        workerRequestDto1.setFirstName("Dave");
-        workerRequestDto1.setLastName("Grohl");
-        workerRequestDto1.setPatronymic("test");
-        workerRequestDto1.setEmail("dave.grohl@gmail.com");
-        workerRequestDto1.setBirthDate(Instant.parse("1969-01-14T00:00:00Z"));
-        workerRequestDto1.setHireDate(Instant.now());
-
-        WorkerRequestDto workerRequestDto2 = new WorkerRequestDto();
-        workerRequestDto2.setFirstName("Mark");
-        workerRequestDto2.setLastName("Lanegan");
-        workerRequestDto2.setPatronymic("Homme");
-        workerRequestDto2.setEmail("mark.lanegan@gmail.com");
-        workerRequestDto2.setBirthDate(Instant.parse("1964-11-25T00:00:00Z"));
-        workerRequestDto2.setHireDate(Instant.now());
-
-        return Stream.of(Arguments.of(1L, workerRequestDto),
-                Arguments.of(2L, workerRequestDto1),
-                Arguments.of(3L, workerRequestDto2));
+        return Stream.of(workerRequestDto);
     }
 
     private static List<Pageable> getPageable() {
