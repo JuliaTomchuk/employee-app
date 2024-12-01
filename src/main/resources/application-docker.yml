@@ -17,4 +17,4 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8082/realms/employee-realm
+          issuer-uri: http://keycloak:8080/realms/employee-realm

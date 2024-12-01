@@ -1,7 +1,7 @@
 package by.andersen.employee.controller;
 
-import by.andersen.employee.TestDataGenerator;
 import by.andersen.employee.TestConfig;
+import by.andersen.employee.TestDataGenerator;
 import by.andersen.employee.domain.Employee;
 import by.andersen.employee.dto.employee.EmployeeFilterDto;
 import by.andersen.employee.enums.EmployeeType;
@@ -26,7 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -76,9 +75,6 @@ class EmployeeControllerTest {
     private static final String BASE_PATH = "/api/v1/employees";
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private EmployeeRepository employeeRepository;
 
     @Autowired
@@ -114,7 +110,6 @@ class EmployeeControllerTest {
     @AfterEach
     void cleanDataBase() {
         employeeRepository.deleteAll();
-        jdbcTemplate.execute("ALTER SEQUENCE employee_sequence RESTART WITH 1");
     }
 
     @ParameterizedTest
@@ -151,9 +146,9 @@ class EmployeeControllerTest {
                         .string(ErrorMessage.EMPLOYEE_NOT_FOUND.toString()));
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {1L, 2L, 3L, 4L})
-    void delete_ValidId_NoContent(Long id) throws Exception {
+    @Test
+    void delete_ValidId_NoContent() throws Exception {
+        Long id = employeeRepository.findAll().get(0).getId();
         mockMvc.perform(delete(BASE_PATH + "/" + id)
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN))))
                 .andExpect(status().isNoContent());
@@ -164,7 +159,7 @@ class EmployeeControllerTest {
 
     @Test
     void delete_WithoutAdminRole_Forbidden() throws Exception {
-        Long id = 1L;
+        Long id =  employeeRepository.findAll().get(1).getId();
         mockMvc.perform(delete(BASE_PATH + "/" + id)
                         .with(jwt()))
                 .andExpect(status().isForbidden());
@@ -173,10 +168,9 @@ class EmployeeControllerTest {
         assertTrue(byId.isPresent());
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {5L, 6L, 7L, 77L})
-    void delete_InvalidId_NotFound(Long id) throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + id)
+    @Test
+    void delete_InvalidId_NotFound() throws Exception {
+        mockMvc.perform(delete(BASE_PATH + "/" + 0)
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN))))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(ErrorMessage.EMPLOYEE_NOT_FOUND.toString()));
@@ -294,7 +288,8 @@ class EmployeeControllerTest {
 
     @Test
     void changeType_EmployeeAlreadyHasRequestedType_DataConflictException() throws Exception {
-        mockMvc.perform(put(BASE_PATH + "/" + 1 + "/change-type")
+        Long id = employeeRepository.findAll().get(0).getId();
+        mockMvc.perform(put(BASE_PATH + "/" + id + "/change-type")
                         .param("type", EmployeeType.MANAGER.name())
                         .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN))))
                 .andExpect(status().isConflict())
